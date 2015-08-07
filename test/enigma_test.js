@@ -21,9 +21,18 @@ describe('Enigma', function() {
 
   it('encrypts a four letter word', function() {
     enigma = new Enigma("41521");
-    var encrypted = enigma.encrypt_message('kyra');
+    var encrypted = enigma.encrypt('kyra');
     expect(encrypted).to.equal('nb6v')
+  });
 
+  it('encrypts with offset', function() {
+
+  });
+
+  it('encrypts a six letter word', function() {
+    enigma = new Enigma("41521");
+    var encrypted = enigma.encrypt('kyrast');
+    expect(encrypted).to.equal('nb6vv9')
   });
 
   describe('rotationwheel', function () {
