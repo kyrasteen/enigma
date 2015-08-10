@@ -2,13 +2,23 @@ function RotationWheel() {
   this.characters = 'abcdefghijklmnopqrstuvwxyz123456789 .,'.split('')
 }
 
-function Enigma(key) {
+function Enigma(key, date) {
   this.key = key;
+  this.date = date;
+  var code = '' + ((date * date) % 10000);
+
   this.rotations = {
-    A: parseInt(key.split('').slice(0,2).join('')),
-    B: parseInt(key.split('').slice(1,3).join('')),
-    C: parseInt(key.split('').slice(2,4).join('')),
-    D: parseInt(key.split('').slice(3,5).join(''))
+    A: key.split('').slice(0,2).join(''),
+    B: key.split('').slice(1,3).join(''),
+    C: key.split('').slice(2,4).join(''),
+    D: key.split('').slice(3,5).join('')
+  }
+
+  this.offsets = {
+    A: code[0],
+    B: code[1],
+    C: code[2],
+    D: code[3]
   }
 
   this.encrypt = function(message) {
@@ -23,7 +33,7 @@ function Enigma(key) {
     var key = 0;
     for(var i = 0; i < letters.length; i++) {
       key++;
-      if (i % 4 === 0) {
+      if(i % 4 === 0) {
         key = 0;
       }
       var newChar = this.encrypt_character(letters[i], rotationKeys[key])
@@ -36,8 +46,9 @@ function Enigma(key) {
     wheel = new RotationWheel
     chars = wheel.characters
     for(var i = 0; i < chars.length; i++) {
-      if (chars[i] === character) {
-        var new_index = i + this.rotations[rotation]
+      if(chars[i] === character) {
+        var total_rotation = parseInt(this.rotations[rotation]) + parseInt(this.offsets[rotation]);
+        var new_index = i + total_rotation;
         if(new_index > (chars.length-1)) {
           return chars[new_index-38]
         } else {
@@ -49,3 +60,5 @@ function Enigma(key) {
 
 }
 
+var turing = new Enigma('41521', 021111);
+turing.encrypt("kyra");
