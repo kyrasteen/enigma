@@ -12,5 +12,11 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "babel-polyfill": "~0.0.1"
+  },
+  "scripts": {
+    "test": "mocha --compilers js:babel/register"
+  }
 }

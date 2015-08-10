@@ -7,16 +7,16 @@ describe('Enigma', function() {
     expect(enigma.key).to.equal("41521");
   });
 
-  it('finds rotations from key', function() {
+  xit('finds rotations from key', function() {
     enigma = new Enigma("41521", 021111);
     expect(enigma.rotations['A']).to.equal('41');
     expect(enigma.rotations['D']).to.equal('21');
   });
 
   it('encrypts one letter', function() {
-    enigma = new Enigma("41521", 021111);
-    var encrypted = enigma.encryptCharacter("r","D");
-    expect(encrypted).to.equal('j')
+    enigma = new Enigma("41521", 121111);
+    var encrypted = enigma.encrypt("r");
+    expect(encrypted).to.equal('y')
   });
 
   it('encrypts a four letter word', function() {

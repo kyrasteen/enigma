@@ -1,79 +1,107 @@
-function RotationWheel() {
-  this.characters = 'abcdefghijklmnopqrstuvwxyz123456789 .,'.split('')
+'use strict';
+
+class RotationWheel {
+  constructor() {
+    this.characters = 'abcdefghijklmnopqrstuvwxyz123456789 .,'.split('')
+  }
 }
 
-function EncryptMessage(message) {
-  var letters = message.split('');
-  var rotationKeys = {
-    0: 'A',
-    1: 'B',
-    2: 'C',
-    3: 'D'
-  }
-  var encrypted = [];
-  var key = 0;
-  var resetKey = function() {
-    key = 0;
-  }
-
-  this.solve = function() {
-    for(var i = 0; i < letters.length; i++) {
-      key++;
-      if(i % 4 === 0) {
-        resetKey();
-      }
-      var newChar = this.encryptCharacter(letters[i], rotationKeys[key])
-      encrypted.push(newChar);
+class AlterMessage {
+  constructor(key, date) {
+    const wheel = new RotationWheel();
+    this.chars = wheel.characters;
+    this.offsetCode = '' + ((date * date) % 10000);
+    this.key = key;
+    this.rotationCount = 0;
+    this.rotationKeys = {
+      0: 'A',
+      1: 'B',
+      2: 'C',
+      3: 'D'
     }
-    return encrypted.join('');
+    this.rotations = {
+      A: key.split('').slice(0,2).join(''),
+      B: key.split('').slice(1,3).join(''),
+      C: key.split('').slice(2,4).join(''),
+      D: key.split('').slice(3,5).join('')
+    }
+    this.offsets = {
+      A: this.offsetCode[0],
+      B: this.offsetCode[1],
+      C: this.offsetCode[2],
+      D: this.offsetCode[3]
+    }
   }
 
-  this.encryptCharacter = function(character, rotation) {
-    wheel = new RotationWheel();
-    chars = wheel.characters
-    for(var i = 0; i < chars.length; i++) {
-      if(chars[i] === character) {
-        var new_index = i + this.totalRotation(rotation);
-        if(new_index > (chars.length-1)) {
-          return chars[new_index-38]
+  resetCount () {
+    this.rotationCount = 0;
+  }
+
+  totalRotation (rotation) {
+    return parseInt(this.rotations[rotation]) + parseInt(this.offsets[rotation]);
+  }
+}
+
+class EncryptMessage extends AlterMessage {
+  constructor(message, key, date) {
+    super(key, date);
+    this.encrypted = [];
+    this.letters = message.split('');
+  }
+
+  solve () {
+    for(let i = 0; i < this.letters.length; i++) {
+      this.rotationCount++;
+      if(i % 4 === 0) {
+       this.resetCount();
+      }
+      let newChar = this.encryptCharacter(this.letters[i], this.rotationKeys[this.rotationCount])
+      this.encrypted.push(newChar);
+    }
+    return this.encrypted.join('');
+  }
+
+  encryptCharacter (character, rotation) {
+    for(let i = 0; i < this.chars.length; i++) {
+      if(this.chars[i] === character) {
+        let new_index = i + this.totalRotation(rotation);
+        if(new_index > (this.chars.length-1)) {
+          return this.chars[new_index-38]
         } else {
-          return chars[new_index];
+          return this.chars[new_index];
         }
       }
     }
   }
 }
 
-function Enigma(key, date) {
-  this.key = key;
-  this.date = date;
-  var code = '' + ((date * date) % 10000);
+class DecryptMessage extends AlterMessage {
+  constructor(message, key, date) {
+    super(key, date);
+    this.letters = message.split('');
+    this.decrypted = [];
 
-  this.rotations = {
-    A: key.split('').slice(0,2).join(''),
-    B: key.split('').slice(1,3).join(''),
-    C: key.split('').slice(2,4).join(''),
-    D: key.split('').slice(3,5).join('')
+  solve ()
+  }
+}
+
+class Enigma {
+  constructor(key, date) {
+    this.date = date;
+    this.key = key;
   }
 
-  this.offsets = {
-    A: code[0],
-    B: code[1],
-    C: code[2],
-    D: code[3]
+  encrypt (message) {
+    const encrypter = new EncryptMessage(message, this.key, this.date);
+    return encrypter.solve();
   }
 
-  this.totalRotation = function(rotation) {
-    return parseInt(this.rotations[rotation]) + parseInt(this.offsets[rotation]);
+  decrypt (message) {
+    const decrypter = new DecryptMessage(message, this.key, this.date);
+    return decrypter.solve();
   }
-
-  this.encrypt = function(message) {
-    var encrypter = new EncryptMessage(message);
-    encrypter.solve();
-  }
-
 
 }
 
-// var turing = new Enigma('41521', 021111);
+// const turing = new Enigma('41521', 121111);
 // turing.encrypt("kyra");
