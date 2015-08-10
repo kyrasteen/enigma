@@ -15,7 +15,7 @@ describe('Enigma', function() {
 
   it('encrypts one letter', function() {
     enigma = new Enigma("41521", 021111);
-    var encrypted = enigma.encrypt_character("r","D");
+    var encrypted = enigma.encryptCharacter("r","D");
     expect(encrypted).to.equal('j')
   });
 
