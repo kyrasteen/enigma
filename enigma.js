@@ -1,14 +1,14 @@
 'use strict';
 
 class RotationWheel {
-  constructor() {
+  constructor () {
     this.characters = 'abcdefghijklmnopqrstuvwxyz123456789 .,'.split('')
   }
 }
 
 class AlterMessage {
-  constructor(key, date) {
-    const wheel = new RotationWheel();
+  constructor (key, date) {
+    const wheel = new RotationWheel ();
     this.chars = wheel.characters;
     this.offsetCode = '' + ((date * date) % 10000);
     this.key = key;
@@ -40,38 +40,56 @@ class AlterMessage {
   totalRotation (rotation) {
     return parseInt(this.rotations[rotation]) + parseInt(this.offsets[rotation]);
   }
+
+  execute () {
+    let newMessage = [];
+    for (let i = 0; i < this.letters.length; i++) {
+      this.rotationCount++;
+      if (i % 4 === 0) {
+        this.resetCount();
+      }
+      let rotationLetter = this.rotationKeys[this.rotationCount];
+      let newChar = this.alterCharacter(this.letters[i], rotationLetter);
+      newMessage.push(newChar);
+    }
+    return newMessage.join('');
+  }
+
+  alterCharacter (character, rotationLetter) {
+    for (let i = 0; i < this.chars.length; i++) {
+      if (this.chars[i] === character) {
+        return this.findNewIndex(i, rotationLetter);
+      }
+    }
+  }
+
+  findNewIndex (current_index, rotationLetter) {
+    let new_index;
+    if (this instanceof EncryptMessage) {
+      new_index = current_index + this.totalRotation(rotationLetter);
+    } else {
+      new_index = current_index - this.totalRotation(rotationLetter);
+    }
+    if (new_index > (this.chars.length-1)) {
+      return this.chars[new_index-this.chars.length];
+    } else if (new_index < 0) {
+      const absolute = Math.abs(new_index);
+      return this.chars[this.chars.length - absolute];
+    } else {
+      return this.chars[new_index];
+    }
+  }
 }
 
 class EncryptMessage extends AlterMessage {
   constructor(message, key, date) {
     super(key, date);
-    this.encrypted = [];
     this.letters = message.split('');
   }
 
   solve () {
-    for(let i = 0; i < this.letters.length; i++) {
-      this.rotationCount++;
-      if(i % 4 === 0) {
-       this.resetCount();
-      }
-      let newChar = this.encryptCharacter(this.letters[i], this.rotationKeys[this.rotationCount])
-      this.encrypted.push(newChar);
-    }
-    return this.encrypted.join('');
-  }
-
-  encryptCharacter (character, rotation) {
-    for(let i = 0; i < this.chars.length; i++) {
-      if(this.chars[i] === character) {
-        let new_index = i + this.totalRotation(rotation);
-        if(new_index > (this.chars.length-1)) {
-          return this.chars[new_index-38]
-        } else {
-          return this.chars[new_index];
-        }
-      }
-    }
+    const encrypted = this.execute();
+    return encrypted;
   }
 }
 
@@ -79,9 +97,11 @@ class DecryptMessage extends AlterMessage {
   constructor(message, key, date) {
     super(key, date);
     this.letters = message.split('');
-    this.decrypted = [];
+  }
 
-  solve ()
+  solve () {
+    const decrypted = this.execute();
+    return decrypted;
   }
 }
 
@@ -103,5 +123,3 @@ class Enigma {
 
 }
 
-// const turing = new Enigma('41521', 121111);
-// turing.encrypt("kyra");

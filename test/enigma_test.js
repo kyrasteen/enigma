@@ -7,11 +7,6 @@ describe('Enigma', function() {
     expect(enigma.key).to.equal("41521");
   });
 
-  xit('finds rotations from key', function() {
-    enigma = new Enigma("41521", 021111);
-    expect(enigma.rotations['A']).to.equal('41');
-    expect(enigma.rotations['D']).to.equal('21');
-  });
 
   it('encrypts one letter', function() {
     enigma = new Enigma("41521", 121111);
@@ -41,6 +36,14 @@ describe('Enigma', function() {
     enigma = new Enigma("41521", 021111);
     var decrypted = enigma.decrypt('si85')
     expect(decrypted).to.equal('kyra');
+  });
+
+  describe('AlterMessage', function() {
+    it('finds rotations from key', function() {
+      alterer = new AlterMessage("41521", 021111);
+      expect(alterer.rotations['A']).to.equal('41');
+      expect(alterer.rotations['D']).to.equal('21');
+    });
   });
 
   describe('rotationwheel', function() {
